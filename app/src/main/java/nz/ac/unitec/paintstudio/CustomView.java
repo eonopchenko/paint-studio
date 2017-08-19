@@ -18,28 +18,11 @@ import java.util.ArrayList;
 
 public class CustomView extends View implements View.OnTouchListener {
 
-    ArrayList<Coordinate> points = new ArrayList <>();
-
     private Path drawPath;
-    private Paint drawPaint, canvasPaint;
-    private int paintColor = 0xFF660000;
-    private Canvas drawCanvas;
-    private Bitmap canvasBitmap;
+    private Paint drawPaint;
 
-    private ArrayList<Path> paths = new ArrayList<Path>();
-    private ArrayList<Path> undonePaths = new ArrayList<Path>();
-
-    boolean flag = false;
-
-    class Coordinate {
-        float x;
-        float y;
-
-        public Coordinate(float x, float y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
+    private ArrayList<Path> paths = new ArrayList<>();
+    private ArrayList<Path> undonePaths = new ArrayList<>();
 
     public CustomView(Context context) {
         super(context);
@@ -59,20 +42,17 @@ public class CustomView extends View implements View.OnTouchListener {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        drawCanvas = new Canvas(canvasBitmap);
     }
 
     private void init() {
         drawPath = new Path();
         drawPaint = new Paint();
-        drawPaint.setColor(paintColor);
+        drawPaint.setColor(0xFF660000);
         drawPaint.setAntiAlias(true);
         drawPaint.setStrokeWidth(20);
         drawPaint.setStyle(Paint.Style.STROKE);
         drawPaint.setStrokeJoin(Paint.Join.ROUND);
         drawPaint.setStrokeCap(Paint.Cap.ROUND);
-        canvasPaint = new Paint(Paint.DITHER_FLAG);
         setOnTouchListener(this);
     }
 
@@ -106,23 +86,29 @@ public class CustomView extends View implements View.OnTouchListener {
         canvas.drawPath(drawPath, drawPaint);
     }
 
-    public void setCustomState(ArrayList<Coordinate> customState) {
-        this.points = customState;
+    public void setPaths(ArrayList<Path> paths) {
+        this.paths = paths;
+    }
+
+    public void setUndonePaths(ArrayList<Path> undonePaths) {
+        this.undonePaths = undonePaths;
     }
 
     @Override
     public Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
-        SavedState ss = new SavedState(superState);
-        ss.state = points;
-        return ss;
+        SavedPaths savedPaths = new SavedPaths(superState);
+        savedPaths.paths = paths;
+        savedPaths.undonePaths = undonePaths;
+        return savedPaths;
     }
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        SavedState ss = (SavedState) state;
-        super.onRestoreInstanceState(ss.getSuperState());
-        setCustomState(ss.state);
+        SavedPaths savedPaths = (SavedPaths) state;
+        super.onRestoreInstanceState(savedPaths.getSuperState());
+        setPaths(savedPaths.paths);
+        setUndonePaths(savedPaths.undonePaths);
     }
 
     @Override
@@ -140,6 +126,7 @@ public class CustomView extends View implements View.OnTouchListener {
         case MotionEvent.ACTION_UP:
             paths.add(new Path(drawPath));
             drawPath.reset();
+            undonePaths.clear();
             break;
         default:
             return false;
@@ -149,31 +136,34 @@ public class CustomView extends View implements View.OnTouchListener {
         return true;
     }
 
-    static class SavedState extends BaseSavedState {
-        ArrayList<Coordinate> state;
+    static class SavedPaths extends BaseSavedState {
+        ArrayList<Path> paths;
+        ArrayList<Path> undonePaths;
 
-        SavedState(Parcelable superState) {
+        SavedPaths(Parcelable superState) {
             super(superState);
         }
 
-        private SavedState(Parcel in) {
+        private SavedPaths(Parcel in) {
             super(in);
-            in.readList(state, null);
+            in.readList(paths, paths.getClass().getClassLoader());
+            in.readList(undonePaths, undonePaths.getClass().getClassLoader());
         }
 
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeList(state);
+            out.writeList(paths);
+            out.writeList(undonePaths);
         }
 
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
+        public static final Parcelable.Creator<SavedPaths> CREATOR
+                = new Parcelable.Creator<SavedPaths>() {
+            public SavedPaths createFromParcel(Parcel in) {
+                return new SavedPaths(in);
             }
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
+            public SavedPaths[] newArray(int size) {
+                return new SavedPaths[size];
             }
         };
     }
