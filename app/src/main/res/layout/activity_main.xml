@@ -10,7 +10,14 @@
         android:id="@+id/custom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Switch"/>
+        android:layout_marginTop="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
         android:id="@+id/btnUndo"
@@ -18,20 +25,42 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="undoClicked"
         android:text="Undo"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:onClick="undoClicked"/>
 
     <Button
         android:id="@+id/btnRedo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="redoClicked"
         android:text="Redo"
         app:layout_constraintLeft_toRightOf="@+id/btnUndo"
         android:layout_marginLeft="8dp"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:onClick="redoClicked"/>
+
+    <Button
+        android:id="@+id/btnToolBrush"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Brush"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnUndo"
+        android:onClick="toolBrushClicked"/>
+
+    <Button
+        android:id="@+id/btnToolEllipse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Circle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnToolBrush"
+        android:onClick="toolEllipseClicked"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -22,4 +22,12 @@ public class MainActivity extends AppCompatActivity {
     public void redoClicked(View view) {
         customView.Redo();
     }
+
+    public void toolBrushClicked(View view) {
+        customView.SetTool(CustomView.Tool.BRUSH);
+    }
+
+    public void toolEllipseClicked(View view) {
+        customView.SetTool(CustomView.Tool.ELLIPSE);
+    }
 }
