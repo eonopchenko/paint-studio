@@ -10,10 +10,6 @@
         android:id="@+id/custom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,7 +24,8 @@
         android:text="Undo"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:onClick="undoClicked"/>
+        android:onClick="undoClicked"
+        android:layout_marginStart="8dp" />
 
     <Button
         android:id="@+id/btnRedo"
@@ -39,7 +36,8 @@
         android:layout_marginLeft="8dp"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
-        android:onClick="redoClicked"/>
+        android:onClick="redoClicked"
+        android:layout_marginStart="8dp" />
 
     <Button
         android:id="@+id/btnToolBrush"
@@ -50,7 +48,8 @@
         android:text="Brush"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnUndo"
-        android:onClick="toolBrushClicked"/>
+        android:onClick="toolBrushClicked"
+        android:layout_marginStart="8dp" />
 
     <Button
         android:id="@+id/btnToolEllipse"
@@ -61,7 +60,8 @@
         android:text="Circle"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnToolBrush"
-        android:onClick="toolEllipseClicked"/>
+        android:onClick="toolEllipseClicked"
+        android:layout_marginStart="8dp" />
 
     <SeekBar
         android:id="@+id/sbStrokeWidth"
@@ -74,7 +74,9 @@
         android:progress="10"
         app:layout_constraintLeft_toRightOf="@+id/btnRedo"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
 
     <TextView
         android:id="@+id/tvStrokeWidth"
@@ -86,6 +88,34 @@
         android:text="10"
         app:layout_constraintLeft_toRightOf="@+id/btnRedo"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sbStrokeWidth" />
+        app:layout_constraintTop_toBottomOf="@+id/sbStrokeWidth"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <Switch
+        android:id="@+id/swStrokeColorMix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Color Mix (Stroke)"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStrokeWidth"
+        app:layout_constraintLeft_toRightOf="@+id/btnToolBrush"
+        android:layout_marginLeft="8dp" />
+
+    <Switch
+        android:id="@+id/swFillColorMix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Color Mix (Fill)"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/swStrokeColorMix"
+        app:layout_constraintLeft_toRightOf="@+id/btnToolBrush"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

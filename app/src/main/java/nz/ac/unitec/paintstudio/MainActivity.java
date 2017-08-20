@@ -3,7 +3,9 @@ package nz.ac.unitec.paintstudio;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,7 +16,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         customView = (CustomView)findViewById(R.id.custom);
+
         SeekBar sbStrokeWidth = (SeekBar) findViewById(R.id.sbStrokeWidth);
         sbStrokeWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -31,6 +35,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
+            }
+        });
+
+        Switch swStrokeColorMix = (Switch) findViewById(R.id.swStrokeColorMix);
+        swStrokeColorMix.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                customView.SetStrokeColorMix(isChecked);
+            }
+        });
+
+        Switch swFillColorMix = (Switch) findViewById(R.id.swFillColorMix);
+        swFillColorMix.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                customView.SetFillColorMix(isChecked);
             }
         });
     }
