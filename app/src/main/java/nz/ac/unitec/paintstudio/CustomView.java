@@ -159,6 +159,10 @@ public class CustomView extends View implements View.OnTouchListener {
         this.mTool = tool;
     }
 
+    public void SetStrokeWidth(int strokeWidth) {
+        this.mStrokeWidth = strokeWidth;
+    }
+
 
     ///--- OVERRIDDEN METHODS ---///
 
