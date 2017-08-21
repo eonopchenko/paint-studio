@@ -21,7 +21,8 @@ public class CustomView extends View implements View.OnTouchListener {
 
     public enum Tool {
         BRUSH,
-        ELLIPSE
+        ELLIPSE,
+        RECTANGLE
     }
 
     /// Root sketch class
