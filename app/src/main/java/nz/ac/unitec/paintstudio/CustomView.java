@@ -229,6 +229,14 @@ public class CustomView extends View implements View.OnTouchListener {
         this.mFillColorMix = state;
     }
 
+    public void SetStrokeColor(int color) {
+        mStrokeColor = color;
+    }
+
+    public void SetFillColor(int color) {
+        mFillColor = color;
+    }
+
 
     ///--- OVERRIDDEN METHODS ---///
 
