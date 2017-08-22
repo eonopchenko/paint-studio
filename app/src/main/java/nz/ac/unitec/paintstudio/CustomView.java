@@ -136,15 +136,20 @@ public class CustomView extends View implements View.OnTouchListener {
 
                     handler.post(new Runnable(){
                         public void run() {
-                            Random rnd = new Random();
-                            mStrokeColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-                            invalidate();
+                            if (!mStopColorThread) {
+                                System.out.println("random color");
+                                Random rnd = new Random();
+                                mStrokeColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+                                invalidate();
+                            }
                         }
                     });
                 }
+                System.out.println("stopped thread");
             }
         };
         new Thread(runnable).start();
+        System.out.println("started thread");
     }
 
     /// Stop color cycling thread
@@ -209,6 +214,17 @@ public class CustomView extends View implements View.OnTouchListener {
             mSketchList.add(mUndoneSketchList.get(size - 1));
             mUndoneSketchList.remove(size - 1);
         }
+
+        invalidate();
+    }
+
+    public void Clear() {
+
+        for(Sketch sketch : mSketchList) {
+            mUndoneSketchList.add(sketch);
+        }
+
+        mSketchList.clear();
 
         invalidate();
     }
@@ -319,13 +335,13 @@ public class CustomView extends View implements View.OnTouchListener {
                 startColorThread();
 
                 if (mStrokeColorMix) {
-                    Random rnd = new Random();
-                    mStrokeColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+//                    Random rnd = new Random();
+//                    mStrokeColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
                 }
 
                 if (mFillColorMix) {
-                    Random rnd = new Random();
-                    mFillColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+//                    Random rnd = new Random();
+//                    mFillColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
                 }
 
                 if (mTool == Tool.BRUSH) {

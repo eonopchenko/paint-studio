@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.savvisingh.colorpickerdialog.ColorPickerDialog;
 
@@ -51,13 +53,15 @@ public class PaintFragment extends Fragment {
         closestColorsList.add(getResources().getColor(R.color.colorViolet));
 
         final CustomView customView = (CustomView)mView.findViewById(R.id.customView);
+
         final ImageButton btnToolUndo = (ImageButton) mView.findViewById(R.id.btnToolUndo);
         final ImageButton btnToolRedo = (ImageButton) mView.findViewById(R.id.btnToolRedo);
+        final ImageButton btnToolClear = (ImageButton) mView.findViewById(R.id.btnToolClear);
         final ImageButton btnToolBrush = (ImageButton) mView.findViewById(R.id.btnToolBrush);
         final ImageButton btnToolEllipse = (ImageButton) mView.findViewById(R.id.btnToolEllipse);
-        final ImageButton btnToolRectangle = (ImageButton) mView.findViewById(R.id.btnToolRectangle);
         final ImageButton btnToolStrokeColor = (ImageButton) mView.findViewById(R.id.btnToolStrokeColor);
         final ImageButton btnToolFillColor = (ImageButton) mView.findViewById(R.id.btnToolFillColor);
+
         btnToolUndo.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -88,12 +92,26 @@ public class PaintFragment extends Fragment {
                 return true;
             }
         });
+        btnToolClear.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        btnToolClear.setBackgroundColor(getResources().getColor(R.color.colorSpindle));
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        btnToolClear.setBackgroundColor(getResources().getColor(R.color.colorChambray));
+                        customView.Clear();
+                        break;
+                }
+                return true;
+            }
+        });
         btnToolBrush.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btnToolBrush.setBackgroundColor(getResources().getColor(R.color.colorSpindle));
                 btnToolEllipse.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                btnToolRectangle.setBackgroundColor(getResources().getColor(android.R.color.transparent));
                 customView.SetTool(CustomView.Tool.BRUSH);
             }
         });
@@ -102,17 +120,25 @@ public class PaintFragment extends Fragment {
             public void onClick(View v) {
                 btnToolEllipse.setBackgroundColor(getResources().getColor(R.color.colorSpindle));
                 btnToolBrush.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                btnToolRectangle.setBackgroundColor(getResources().getColor(android.R.color.transparent));
                 customView.SetTool(CustomView.Tool.ELLIPSE);
             }
         });
-        btnToolRectangle.setOnClickListener(new View.OnClickListener() {
+        SeekBar sbStrokeWidth = (SeekBar) mView.findViewById(R.id.sbStrokeWidth);
+        sbStrokeWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
-                btnToolRectangle.setBackgroundColor(getResources().getColor(R.color.colorSpindle));
-                btnToolBrush.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                btnToolEllipse.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                customView.SetTool(CustomView.Tool.RECTANGLE);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ((TextView) mView.findViewById(R.id.tvStrokeWidth)).setText(progress + "");
+                customView.SetStrokeWidth(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
         btnToolStrokeColor.setOnClickListener(new View.OnClickListener() {
