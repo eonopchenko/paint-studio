@@ -10,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.savvisingh.colorpickerdialog.ColorPickerDialog;
@@ -26,7 +28,6 @@ import java.util.ArrayList;
 public class PaintFragment extends Fragment {
 
     View mView;
-    ArrayList<Integer> closestColorsList = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,15 +45,8 @@ public class PaintFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        closestColorsList.add(getResources().getColor(R.color.colorRed));
-        closestColorsList.add(getResources().getColor(R.color.colorOrange));
-        closestColorsList.add(getResources().getColor(R.color.colorYellow));
-        closestColorsList.add(getResources().getColor(R.color.colorGreen));
-        closestColorsList.add(getResources().getColor(R.color.colorBlue));
-        closestColorsList.add(getResources().getColor(R.color.colorIndigo));
-        closestColorsList.add(getResources().getColor(R.color.colorViolet));
-
         final CustomView customView = (CustomView)mView.findViewById(R.id.customView);
+        final ArrayList<Integer> closestColorsList = customView.GetColorsList();
 
         final ImageButton btnToolUndo = (ImageButton) mView.findViewById(R.id.btnToolUndo);
         final ImageButton btnToolRedo = (ImageButton) mView.findViewById(R.id.btnToolRedo);
@@ -61,50 +55,27 @@ public class PaintFragment extends Fragment {
         final ImageButton btnToolEllipse = (ImageButton) mView.findViewById(R.id.btnToolEllipse);
         final ImageButton btnToolStrokeColor = (ImageButton) mView.findViewById(R.id.btnToolStrokeColor);
         final ImageButton btnToolFillColor = (ImageButton) mView.findViewById(R.id.btnToolFillColor);
+        final Switch swStrokeColorCycling = (Switch) mView.findViewById(R.id.swStrokeColorCycling);
+        final Switch swFillColorCycling = (Switch) mView.findViewById(R.id.swFillColorCycling);
+        final Switch swStrokeColorRand = (Switch) mView.findViewById(R.id.swStrokeColorRand);
+        final Switch swFillColorRand = (Switch) mView.findViewById(R.id.swFillColorRand);
 
-        btnToolUndo.setOnTouchListener(new View.OnTouchListener() {
+        btnToolUndo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        btnToolUndo.setBackgroundColor(getResources().getColor(R.color.colorSpindle));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        btnToolUndo.setBackgroundColor(getResources().getColor(R.color.colorChambray));
-                        customView.Undo();
-                        break;
-                }
-                return true;
+            public void onClick(View v) {
+                customView.Undo();
             }
         });
-        btnToolRedo.setOnTouchListener(new View.OnTouchListener() {
+        btnToolRedo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        btnToolRedo.setBackgroundColor(getResources().getColor(R.color.colorSpindle));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        btnToolRedo.setBackgroundColor(getResources().getColor(R.color.colorChambray));
-                        customView.Redo();
-                        break;
-                }
-                return true;
+            public void onClick(View v) {
+                customView.Redo();
             }
         });
-        btnToolClear.setOnTouchListener(new View.OnTouchListener() {
+        btnToolClear.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        btnToolClear.setBackgroundColor(getResources().getColor(R.color.colorSpindle));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        btnToolClear.setBackgroundColor(getResources().getColor(R.color.colorChambray));
-                        customView.Clear();
-                        break;
-                }
-                return true;
+            public void onClick(View v) {
+                customView.Clear();
             }
         });
         btnToolBrush.setOnClickListener(new View.OnClickListener() {
@@ -164,9 +135,6 @@ public class PaintFragment extends Fragment {
 
                     }
                 });
-
-                dialog.show(getFragmentManager(), "some_tag");
-
             }
         });
         btnToolFillColor.setOnClickListener(new View.OnClickListener() {
@@ -192,8 +160,30 @@ public class PaintFragment extends Fragment {
 
                     }
                 });
-
-                dialog.show(getFragmentManager(), "some_tag");
+            }
+        });
+        swStrokeColorCycling.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                customView.SetStrokeColorCycling(isChecked);
+            }
+        });
+        swFillColorCycling.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                customView.SetFillColorCycling(isChecked);
+            }
+        });
+        swStrokeColorRand.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                customView.SetStrokeColorRand(isChecked);
+            }
+        });
+        swFillColorRand.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                customView.SetFillColorRand(isChecked);
             }
         });
     }

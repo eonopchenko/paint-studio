@@ -15,8 +15,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class CustomView extends View implements View.OnTouchListener {
 
@@ -106,6 +104,10 @@ public class CustomView extends View implements View.OnTouchListener {
         }
     }
 
+    public ArrayList<Integer> GetColorsList() {
+        return colorsList;
+    }
+
     private Paint mPaint;
     private Tool mTool = Tool.BRUSH;
 
@@ -118,8 +120,14 @@ public class CustomView extends View implements View.OnTouchListener {
     private int mStrokeWidth;
     private int mStrokeColor;
     private int mFillColor;
-    private boolean mStrokeColorMix;
-    private boolean mFillColorMix;
+    private int mStrokeColorIdx;
+    private int mFillColorIdx;
+    private boolean mStrokeColorCycling;
+    private boolean mFillColorCycling;
+    private boolean mStrokeColorRand;
+    private boolean mFillColorRand;
+
+    ArrayList<Integer> colorsList;
 
     public CustomView(Context context) {
         super(context);
@@ -146,11 +154,25 @@ public class CustomView extends View implements View.OnTouchListener {
         mStrokeWidth = 10;
         mStrokeColor = Color.RED;
         mFillColor = Color.YELLOW;
-        mStrokeColorMix = false;
-        mFillColorMix = false;
+        mStrokeColorCycling = false;
+        mFillColorCycling = false;
+        mStrokeColorRand = false;
+        mFillColorRand = false;
 
         mCurrentPath = new PathSketch(mStrokeColor, mStrokeWidth);
         mCurrentEllipse = new EllipseSketch(0, 0, mStrokeColor, mStrokeWidth, mFillColor);
+
+        colorsList = new ArrayList<>();
+        colorsList.add(getResources().getColor(R.color.colorRed));
+        colorsList.add(getResources().getColor(R.color.colorOrange));
+        colorsList.add(getResources().getColor(R.color.colorYellow));
+        colorsList.add(getResources().getColor(R.color.colorGreen));
+        colorsList.add(getResources().getColor(R.color.colorBlue));
+        colorsList.add(getResources().getColor(R.color.colorIndigo));
+        colorsList.add(getResources().getColor(R.color.colorViolet));
+
+        mStrokeColorIdx = 0;
+        mFillColorIdx = 2;
 
         setOnTouchListener(this);
 
@@ -231,9 +253,21 @@ public class CustomView extends View implements View.OnTouchListener {
 
     Runnable updateColor = new Runnable() {
         public void run() {
-            Random rnd = new Random();
-            mStrokeColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-            invalidate();
+            if(mStrokeColorCycling) {
+                if (++mStrokeColorIdx > colorsList.size() - 1) {
+                    mStrokeColorIdx = 0;
+                }
+                mStrokeColor = colorsList.get(mStrokeColorIdx);
+            }
+            if(mFillColorCycling) {
+                if (++mFillColorIdx > colorsList.size() - 1) {
+                    mFillColorIdx = 0;
+                }
+                mFillColor = colorsList.get(mFillColorIdx);
+            }
+            if(mStrokeColorCycling || mFillColorCycling) {
+                invalidate();
+            }
         }
     };
 
@@ -245,20 +279,28 @@ public class CustomView extends View implements View.OnTouchListener {
         this.mStrokeWidth = strokeWidth;
     }
 
-    public void SetStrokeColorMix(boolean state) {
-        this.mStrokeColorMix = state;
-    }
-
-    public void SetFillColorMix(boolean state) {
-        this.mFillColorMix = state;
-    }
-
     public void SetStrokeColor(int color) {
         mStrokeColor = color;
     }
 
     public void SetFillColor(int color) {
         mFillColor = color;
+    }
+
+    public void SetStrokeColorCycling(boolean state) {
+        this.mStrokeColorCycling = state;
+    }
+
+    public void SetFillColorCycling(boolean state) {
+        this.mFillColorCycling = state;
+    }
+
+    public void SetStrokeColorRand(boolean state) {
+        this.mStrokeColorRand = state;
+    }
+
+    public void SetFillColorRand(boolean state) {
+        this.mFillColorRand = state;
     }
 
 
@@ -336,16 +378,21 @@ public class CustomView extends View implements View.OnTouchListener {
                     mCurrentEllipse = new EllipseSketch(touchX, touchY, mStrokeColor, mStrokeWidth, mFillColor);
                 }
                 break;
+
             case MotionEvent.ACTION_MOVE:
                 mColorThreadState = ColorThreadState.STARTED;
-                if (mStrokeColorMix) {
-//                    Random rnd = new Random();
-//                    mStrokeColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+                if (mStrokeColorRand) {
+                    if (++mStrokeColorIdx > colorsList.size() - 1) {
+                        mStrokeColorIdx = 0;
+                    }
+                    mStrokeColor = colorsList.get(mStrokeColorIdx);
                 }
 
-                if (mFillColorMix) {
-//                    Random rnd = new Random();
-//                    mFillColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+                if (mFillColorRand) {
+                    if (++mFillColorIdx > colorsList.size() - 1) {
+                        mFillColorIdx = 0;
+                    }
+                    mFillColor = colorsList.get(mFillColorIdx);
                 }
 
                 if (mTool == Tool.BRUSH) {
@@ -360,6 +407,7 @@ public class CustomView extends View implements View.OnTouchListener {
                     mCurrentEllipse.getRectF().set(centerX - width, centerY - height, centerX + width, centerY + height);
                 }
                 break;
+
             case MotionEvent.ACTION_UP:
                 mColorThreadState = ColorThreadState.IDLE;
                 if (mTool == Tool.BRUSH) {
@@ -374,6 +422,7 @@ public class CustomView extends View implements View.OnTouchListener {
                 }
                 mUndoneSketchList.clear();
                 break;
+
             default:
                 return false;
         }
