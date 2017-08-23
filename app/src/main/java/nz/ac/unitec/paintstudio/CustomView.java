@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CustomView extends View implements View.OnTouchListener {
 
@@ -129,6 +130,14 @@ public class CustomView extends View implements View.OnTouchListener {
 
     ArrayList<Integer> colorsList;
 
+
+    private List<ColorChangedEventListener> colorChangedListeners = new ArrayList<> ();
+
+    void setColorChangedEventListener(ColorChangedEventListener listener)
+    {
+        this.colorChangedListeners.add(listener);
+    }
+
     public CustomView(Context context) {
         super(context);
         init();
@@ -154,6 +163,7 @@ public class CustomView extends View implements View.OnTouchListener {
         mStrokeWidth = 10;
         mStrokeColor = Color.RED;
         mFillColor = Color.YELLOW;
+        colorChanged();
         mStrokeColorCycling = false;
         mFillColorCycling = false;
         mStrokeColorRand = false;
@@ -214,6 +224,13 @@ public class CustomView extends View implements View.OnTouchListener {
     }
 
 
+    private void colorChanged() {
+        for (ColorChangedEventListener listener : colorChangedListeners) {
+            listener.onColorChanged(mStrokeColor, mFillColor);
+        }
+    }
+
+
     ///--- INTERFACES ---///
 
     public void Undo() {
@@ -266,6 +283,7 @@ public class CustomView extends View implements View.OnTouchListener {
                 mFillColor = colorsList.get(mFillColorIdx);
             }
             if(mStrokeColorCycling || mFillColorCycling) {
+                colorChanged();
                 invalidate();
             }
         }
@@ -281,6 +299,7 @@ public class CustomView extends View implements View.OnTouchListener {
 
     public void SetStrokeColor(int color) {
         mStrokeColor = color;
+        colorChanged();
     }
 
     public void SetFillColor(int color) {
@@ -386,6 +405,7 @@ public class CustomView extends View implements View.OnTouchListener {
                         mStrokeColorIdx = 0;
                     }
                     mStrokeColor = colorsList.get(mStrokeColorIdx);
+                    colorChanged();
                 }
 
                 if (mFillColorRand) {
@@ -393,6 +413,7 @@ public class CustomView extends View implements View.OnTouchListener {
                         mFillColorIdx = 0;
                     }
                     mFillColor = colorsList.get(mFillColorIdx);
+                    colorChanged();
                 }
 
                 if (mTool == Tool.BRUSH) {

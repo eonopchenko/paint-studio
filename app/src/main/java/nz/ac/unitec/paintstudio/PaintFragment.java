@@ -25,9 +25,12 @@ import java.util.ArrayList;
  * Created by eugene on 21/08/2017.
  */
 
-public class PaintFragment extends Fragment {
+public class PaintFragment extends Fragment implements ColorChangedEventListener {
 
     View mView;
+    ImageButton btnToolStrokeColor;
+    ImageButton btnToolFillColor;
+    ArrayList<Integer> closestColorsList;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,15 +49,16 @@ public class PaintFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         final CustomView customView = (CustomView)mView.findViewById(R.id.customView);
-        final ArrayList<Integer> closestColorsList = customView.GetColorsList();
+        closestColorsList = customView.GetColorsList();
+        customView.setColorChangedEventListener(this);
 
         final ImageButton btnToolUndo = (ImageButton) mView.findViewById(R.id.btnToolUndo);
         final ImageButton btnToolRedo = (ImageButton) mView.findViewById(R.id.btnToolRedo);
         final ImageButton btnToolClear = (ImageButton) mView.findViewById(R.id.btnToolClear);
         final ImageButton btnToolBrush = (ImageButton) mView.findViewById(R.id.btnToolBrush);
         final ImageButton btnToolEllipse = (ImageButton) mView.findViewById(R.id.btnToolEllipse);
-        final ImageButton btnToolStrokeColor = (ImageButton) mView.findViewById(R.id.btnToolStrokeColor);
-        final ImageButton btnToolFillColor = (ImageButton) mView.findViewById(R.id.btnToolFillColor);
+        btnToolStrokeColor = (ImageButton) mView.findViewById(R.id.btnToolStrokeColor);
+        btnToolFillColor = (ImageButton) mView.findViewById(R.id.btnToolFillColor);
         final Switch swStrokeColorCycling = (Switch) mView.findViewById(R.id.swStrokeColorCycling);
         final Switch swFillColorCycling = (Switch) mView.findViewById(R.id.swFillColorCycling);
         final Switch swStrokeColorRand = (Switch) mView.findViewById(R.id.swStrokeColorRand);
@@ -135,6 +139,8 @@ public class PaintFragment extends Fragment {
 
                     }
                 });
+
+                dialog.show(getFragmentManager(), "tag");
             }
         });
         btnToolFillColor.setOnClickListener(new View.OnClickListener() {
@@ -160,6 +166,8 @@ public class PaintFragment extends Fragment {
 
                     }
                 });
+
+                dialog.show(getFragmentManager(), "some_tag");
             }
         });
         swStrokeColorCycling.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -186,5 +194,11 @@ public class PaintFragment extends Fragment {
                 customView.SetFillColorRand(isChecked);
             }
         });
+    }
+
+    @Override
+    public void onColorChanged(int strokeColor, int fillColor) {
+        btnToolStrokeColor.setBackgroundColor(strokeColor);
+        btnToolFillColor.setBackgroundColor(fillColor);
     }
 }
