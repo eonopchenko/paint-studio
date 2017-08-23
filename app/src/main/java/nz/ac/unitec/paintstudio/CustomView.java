@@ -16,14 +16,23 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class CustomView extends View implements View.OnTouchListener {
 
     public enum Tool {
         BRUSH,
         ELLIPSE,
-        RECTANGLE
     }
+
+    private enum ColorThreadState {
+        IDLE,
+        STARTED,
+        ACTIVE,
+        COMPLETED
+    }
+
+    ColorThreadState mColorThreadState = ColorThreadState.IDLE;
 
     /// Root sketch class
     private class Sketch {
@@ -112,51 +121,6 @@ public class CustomView extends View implements View.OnTouchListener {
     private boolean mStrokeColorMix;
     private boolean mFillColorMix;
 
-    private boolean mStopColorThread = false;
-
-    /// Start color cycling thread
-    private void startColorThread() {
-        final Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            public void run() {
-                mStopColorThread = false;
-                while (!mStopColorThread) {
-                    boolean toBreak = false;
-                    long time = SystemClock.currentThreadTimeMillis();
-                    while (SystemClock.currentThreadTimeMillis() - time < 1000) {
-                        if (mStopColorThread) {
-                            toBreak = true;
-                            break;
-                        }
-                    }
-
-                    if (toBreak) {
-                        break;
-                    }
-
-                    handler.post(new Runnable(){
-                        public void run() {
-                            if (!mStopColorThread) {
-                                System.out.println("random color");
-                                Random rnd = new Random();
-                                mStrokeColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-                                invalidate();
-                            }
-                        }
-                    });
-                }
-                System.out.println("stopped thread");
-            }
-        };
-        new Thread(runnable).start();
-        System.out.println("started thread");
-    }
-
-    /// Stop color cycling thread
-    private void stopColorThread() {
-        mStopColorThread = true;
-    }
-
     public CustomView(Context context) {
         super(context);
         init();
@@ -189,6 +153,42 @@ public class CustomView extends View implements View.OnTouchListener {
         mCurrentEllipse = new EllipseSketch(0, 0, mStrokeColor, mStrokeWidth, mFillColor);
 
         setOnTouchListener(this);
+
+        mColorThreadState = ColorThreadState.IDLE;
+
+        final Handler h = new Handler();
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                long time = 0;
+                while(true) {
+                    switch (mColorThreadState) {
+                        case IDLE: {
+                            break;
+                        }
+
+                        case STARTED: {
+                            time = SystemClock.currentThreadTimeMillis();
+                            mColorThreadState = ColorThreadState.ACTIVE;
+                            break;
+                        }
+
+                        case ACTIVE: {
+                            if (SystemClock.currentThreadTimeMillis() - time >= 1000) {
+                                mColorThreadState = ColorThreadState.COMPLETED;
+                            }
+                            break;
+                        }
+
+                        case COMPLETED: {
+                            h.post(updateColor);
+                            mColorThreadState = ColorThreadState.STARTED;
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+        t.start();
     }
 
 
@@ -228,6 +228,14 @@ public class CustomView extends View implements View.OnTouchListener {
 
         invalidate();
     }
+
+    Runnable updateColor = new Runnable() {
+        public void run() {
+            Random rnd = new Random();
+            mStrokeColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+            invalidate();
+        }
+    };
 
     public void SetTool(Tool tool) {
         this.mTool = tool;
@@ -329,11 +337,7 @@ public class CustomView extends View implements View.OnTouchListener {
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-
-                /// Restart thread
-                stopColorThread();
-                startColorThread();
-
+                mColorThreadState = ColorThreadState.STARTED;
                 if (mStrokeColorMix) {
 //                    Random rnd = new Random();
 //                    mStrokeColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
@@ -357,7 +361,7 @@ public class CustomView extends View implements View.OnTouchListener {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                stopColorThread();
+                mColorThreadState = ColorThreadState.IDLE;
                 if (mTool == Tool.BRUSH) {
                     mCurrentPath.setStrokeColor(mStrokeColor);
                     mSketchList.add(mCurrentPath);
