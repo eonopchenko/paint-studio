@@ -167,7 +167,7 @@ public class PaintFragment extends Fragment implements ColorChangedEventListener
                     }
                 });
 
-                dialog.show(getFragmentManager(), "some_tag");
+                dialog.show(getFragmentManager(), "tag");
             }
         });
         swStrokeColorCycling.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
